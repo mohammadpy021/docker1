@@ -1,0 +1,60 @@
+version : "3.7"
+services:
+  app:
+    build: './app'
+    container_name: 'app'
+    restart: "always"
+    expose:
+      - 8000
+    # ports:
+    #   - '8000:8000'
+    volumes:
+      - type: 'bind'
+        source: './volumes/app'
+        target: '/app'
+    environment:
+      MYSQL_DATABASE: django_app
+      MYSQL_HOST: mariadb
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+    depends_on:
+      - "nginx"
+      - "mariadb"
+
+  nginx:
+    build: './nginx'
+    container_name: 'nginx'
+    restart: "always"
+    ports:
+      - '80:80'
+    volumes: 
+    - type : 'bind'
+      source : './volumes/media'
+      target : '/app/media'
+  
+    - type : 'bind'
+      source : './volumes/static'
+      target : '/app/static'
+  mariadb:
+    image:  'mariadb' #'yobasystems/alpine-mariadb'
+    container_name: 'mariadb'
+    environment:
+      MYSQL_DATABASE: django_app
+      MYSQL_HOST: mariadb
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+    expose:
+      - "3306"
+    volumes:
+    - type : 'bind'
+      source : './volumes/dbdata'
+      target : '/var/lib/mysql'
+      # - ./volumes/dbdata:/var/lib/mysql
+    restart: always
+
+    
+
+    
+      
